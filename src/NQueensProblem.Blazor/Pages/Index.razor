@@ -1,0 +1,90 @@
+﻿@page "/"
+
+<h1 class="text-center">N-Queens Problem</h1>
+<h5 class="text-center">Genetic Algorithm</h5>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-3">
+                <label>Number of Queens:</label>
+                <input @bind="countOfQueen" type="number" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label>Population Size:</label>
+                <input @bind="populationSize" type="number" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label>Mutation Probability:</label>
+                <input @bind="mutationProbability" type="number" step=".01" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label>Number of Generations:</label>
+                <input @bind="numOfGenerations" type="number" class="form-control" />
+            </div>
+            <div class="col-md-12 mt-2">
+                <button type="button" @onclick="Solve" class="btn btn-sm btn-block btn-success">Solve</button>
+            </div>
+        </div>
+    </div>
+    @if (result != null)
+    {
+        <div class="col-md-12">
+            <hr />
+            <div class="table-responsive">
+                <table class="table-bordered text-center mx-auto w-auto">
+                    @for (int i = 0; i < countOfQueen; i++)
+                    {
+                        <tr>
+                            <th class="chess-box bg-warning">@(countOfQueen - i)</th>
+                            @for (int j = 0; j < countOfQueen; j++)
+                            {
+                                <th class="chess-box @(IsWhiteBox(i, j) ? "bg-white text-dark" : "bg-dark text-white")">
+                                    @if (IsQueenPosition(i, j))
+                                    {
+                                        <img class="img-fluid" src="queen.png" alt="Queen" />
+                                    }
+                                </th>
+                            }
+                        </tr>
+                    }
+                    <tr>
+                        <th class="bg-warning"></th>
+                        @for (int i = 0; i < countOfQueen; i++)
+                        {
+                            <th class="chess-box bg-warning">@(i+1)</th>
+                        }
+                    </tr>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+
+@code{
+    bool IsWhiteBox(int row, int col) => (row % 2 == 0 && col % 2 == 0) || (row % 2 != 0 && col % 2 != 0);
+    bool IsQueenPosition(int row, int col)
+    {
+        try
+        {
+            return result[row] == col;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    int countOfQueen = 5;
+    int populationSize = 100;
+    double mutationProbability = 0.5;
+    int numOfGenerations = 1000;
+
+    int[] result = null;
+
+    async Task Solve()
+    {
+        var algorithm = new Algorithms.QueensGeneticAlgorithm();
+        result = algorithm.Solve(countOfQueen, populationSize, mutationProbability, numOfGenerations);
+    }
+}
